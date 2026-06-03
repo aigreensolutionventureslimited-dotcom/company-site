@@ -4,11 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>A.I Green Solutions - Corporate Export Brochure</title>
-    <!-- Premium Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
-    <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -96,7 +94,6 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            /* High-visibility, rich geometric gradient style ensures full visibility without external links */
             background: radial-gradient(circle at 80% 20%, var(--secondary-color) 0%, transparent 50%),
                         radial-gradient(circle at 20% 80%, #052312 0%, transparent 50%),
                         linear-gradient(135deg, #073119 0%, #0b4624 100%);
@@ -114,6 +111,15 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             max-width: 500px;
             margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .brand-logo-img {
+            max-height: 60px;
+            width: auto;
+            margin-bottom: 10px;
         }
 
         .cover-logo {
@@ -257,6 +263,20 @@
             display: flex;
             flex-direction: column;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .product-image-wrapper {
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+            background-color: #cbd5e1;
+        }
+
+        .product-image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
         }
 
         .product-info {
@@ -409,23 +429,56 @@
             font-size: 0.85rem;
         }
 
+        /* Floating Action Print Button styling */
+        .print-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: var(--accent-color);
+            color: var(--dark-neutral);
+            border: none;
+            padding: 15px 25px;
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 1rem;
+            border-radius: 50px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            cursor: pointer;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .print-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+            background-color: #e5be3b;
+        }
+
         /* Print optimization overrides */
         @media print {
             body { background: none; }
             .brochure-container { margin: 0; box-shadow: none; max-width: 100%; }
             .page { page-break-after: always; height: 100vh; padding: 40px; border: none !important; }
             .cover-page { height: 100vh !important; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+            .print-btn { display: none !important; } /* Hide print button on the generated page file */
         }
     </style>
 </head>
 <body>
 
+<button class="print-btn" onclick="window.print();">
+    <i class="fa-solid fa-print"></i> Print Document / Save PDF
+</button>
+
 <div class="brochure-container">
 
-    <!-- PAGE 1: FRONT COVER -->
     <div class="page cover-page">
         <div class="cover-header">
-            <div class="cover-logo"><i class="fa-solid fa-leaf"></i> A.I GREEN <span>SOLUTIONS</span></div>
+            <img src="https://res.cloudinary.com/drehc10ib/image/upload/v1780528608/LOGO.png" alt="A.I Green Solutions Logo" class="brand-logo-img">
+            <div class="cover-logo">A.I GREEN <span>SOLUTIONS</span></div>
             <p style="font-size: 0.75rem; letter-spacing: 4px; text-transform: uppercase; margin-top: 5px; opacity: 0.8;">Ventures Limited</p>
         </div>
         <div class="cover-middle">
@@ -442,7 +495,6 @@
     </div>
 
 
-    <!-- PAGE 2: OVERVIEW & VALUES -->
     <div class="page">
         <h2 class="section-title">Corporate Profile</h2>
         <p class="subtitle">Global Standard Agro-Logistics Operations</p>
@@ -500,28 +552,15 @@
     </div>
 
 
-    <!-- PAGE 3: CATALOG GRID PART 1 -->
     <div class="page">
         <h2 class="section-title">Premium Commodity Catalog</h2>
         <p class="subtitle">Verified Technical Export Specifications</p>
 
         <div class="product-grid">
-            <!-- Product 1 -->
             <div class="product-card">
-                <div class="product-info">
-                    <div class="product-title">Dried Ginger <i class="fa-solid fa-seedling" style="color: var(--accent-color);"></i></div>
-                    <p class="product-desc">Premium sun-dried and split ginger sourced from the rich soils of Kaduna and Nasarawa. High gingerol content.</p>
-                    <table class="specs-table">
-                        <tr><td>Grade</td><td>Grade 1 / Grade 2</td></tr>
-                        <tr><td>Moisture</td><td>&le; 10%</td></tr>
-                        <tr><td>Packaging</td><td>50kg Jute Bags</td></tr>
-                        <tr><td>MOQ</td><td>1 &times; 20ft FCL (~18MT)</td></tr>
-                    </table>
+                <div class="product-image-wrapper">
+                    <img src="https://res.cloudinary.com/drehc10ib/image/upload/v1780530002/sesame.jpg" alt="White Sesame Seeds">
                 </div>
-            </div>
-
-            <!-- Product 2 -->
-            <div class="product-card">
                 <div class="product-info">
                     <div class="product-title">White Sesame Seeds <i class="fa-solid fa-circle-dot" style="color: var(--accent-color);"></i></div>
                     <p class="product-desc">Natural and hulled white sesame seeds with exceptional oil content. Machine sorted for pristine purity levels.</p>
@@ -534,30 +573,50 @@
                 </div>
             </div>
 
-            <!-- Product 3 -->
             <div class="product-card">
+                <div class="product-image-wrapper">
+                    <img src="https://res.cloudinary.com/drehc10ib/image/upload/v1780527016/WhatsApp_Image_2026-06-03_at_15.49.51.jpg" alt="Premium Yellow Corn">
+                </div>
                 <div class="product-info">
-                    <div class="product-title">Cashew Nuts <i class="fa-solid fa-nut" style="color: var(--accent-color);"></i></div>
-                    <p class="product-desc">Raw Cashew Nuts (RCN) and fully processed kernels available in multiple standardized international sizes.</p>
+                    <div class="product-title">Yellow Corn <i class="fa-solid fa-wheat-awn" style="color: var(--accent-color);"></i></div>
+                    <p class="product-desc">High-quality, clean non-GMO yellow maize kernels perfect for international human consumption and animal feed milling formulation.</p>
                     <table class="specs-table">
-                        <tr><td>Grades</td><td>W180, W240, W320, W450</td></tr>
-                        <tr><td>Moisture</td><td>&le; 5%</td></tr>
-                        <tr><td>Out-turn</td><td>47&ndash;52 lbs / 80kg</td></tr>
-                        <tr><td>Packaging</td><td>11.34kg Vacuum Tins</td></tr>
+                        <tr><td>Grade</td><td>Grade 1 Premium</td></tr>
+                        <tr><td>Moisture</td><td>&le; 13% max</td></tr>
+                        <tr><td>Admixture</td><td>&le; 1.5% max</td></tr>
+                        <tr><td>Packaging</td><td>50kg PP Bags</td></tr>
                     </table>
                 </div>
             </div>
 
-            <!-- Product 4 -->
             <div class="product-card">
+                <div class="product-image-wrapper">
+                    <img src="https://res.cloudinary.com/drehc10ib/image/upload/v1780530004/GINGER.png" alt="Premium Garlic">
+                </div>
                 <div class="product-info">
-                    <div class="product-title">Cocoa Beans <i class="fa-solid fa-cubes" style="color: var(--accent-color);"></i></div>
-                    <p class="product-desc">Superior Grade 1 fermented, deeply aromatic, sun-dried cocoa beans sourced from premier cocoa belt estates.</p>
+                    <div class="product-title">Garlic <i class="fa-solid fa-seedling" style="color: var(--accent-color);"></i></div>
+                    <p class="product-desc">Deeply pungent and highly therapeutic whole garlic bulbs. Meticulously cured, air-dried, and sorted for structural safety.</p>
                     <table class="specs-table">
-                        <tr><td>Compliance</td><td>ICCO Standard Class 1</td></tr>
-                        <tr><td>Moisture</td><td>&le; 7.5%</td></tr>
-                        <tr><td>Defect Rate</td><td>&le; 3%</td></tr>
-                        <tr><td>Packaging</td><td>60kg Jute Bags</td></tr>
+                        <tr><td>Size Profile</td><td>40mm, 50mm, 55mm+</td></tr>
+                        <tr><td>Moisture</td><td>Cured & Well-Dried</td></tr>
+                        <tr><td>Defect Rate</td><td>&le; 2% broken bulbs</td></tr>
+                        <tr><td>Packaging</td><td>10kg Mesh Bags / Cartons</td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-image-wrapper">
+                    <img src="https://res.cloudinary.com/drehc10ib/image/upload/v1780530004/ground_nut.png" alt="Premium Groundnut kernels">
+                </div>
+                <div class="product-info">
+                    <div class="product-title">Groundnut <i class="fa-solid fa-nut" style="color: var(--accent-color);"></i></div>
+                    <p class="product-desc">Hand-picked selected (HPS) raw peanut and groundnut kernels. Monitored strictly for absolute control over aflatoxin parameters.</p>
+                    <table class="specs-table">
+                        <tr><td>Type</td><td>Count 40/50, 50/60 kernels/oz</td></tr>
+                        <tr><td>Moisture</td><td>&le; 7% max</td></tr>
+                        <tr><td>Aflatoxin</td><td>Negative / Within EU limits</td></tr>
+                        <tr><td>Packaging</td><td>25kg - 50kg Jute Bags</td></tr>
                     </table>
                 </div>
             </div>
@@ -565,7 +624,6 @@
     </div>
 
 
-    <!-- PAGE 4: CATALOG GRID PART 2 & QUALITY PROCESS -->
     <div class="page">
         <h2 class="section-title">Logistics & Supply Security</h2>
         <p class="subtitle">End-to-End Quality Assurance Protocols</p>
@@ -591,7 +649,6 @@
             </div>
 
             <div class="product-grid" style="grid-template-columns: 1fr; gap: 20px;">
-                <!-- Product 5 -->
                 <div class="product-card">
                     <div class="product-info">
                         <div class="product-title">Dried Hibiscus Flowers <i class="fa-solid fa-leaf" style="color: var(--accent-color);"></i></div>
@@ -603,7 +660,6 @@
                         </table>
                     </div>
                 </div>
-                <!-- Product 6 -->
                 <div class="product-card">
                     <div class="product-info">
                         <div class="product-title">Organic Shea Butter <i class="fa-solid fa-droplet" style="color: var(--accent-color);"></i></div>
@@ -620,7 +676,6 @@
     </div>
 
 
-    <!-- PAGE 5: BACK COVER (CONTACT & CLOSING) -->
     <div class="page back-cover">
         <div class="back-grid">
             <div>
