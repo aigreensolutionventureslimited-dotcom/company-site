@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Green Solutions — Email Campaign Control</title>
+<style>
+:root{
+  --g9:#0b4624;--g7:#116936;--g5:#1d9e55;--g1:#e6f3ec;
+  --gold:#d4af37;--gold-lt:#fdf8e1;
+  --bg:#f4f7f5;--card:#fff;--text:#1a241f;--muted:#5a6e62;--border:#d4e0d8;
+  --red:#c0392b;--red-lt:#fdecea;--amber:#e67e22;--amb-lt:#fef3e2;
+  --blue:#185fa5;--blue-lt:#e8f0fb;--mono:'Courier New',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* NAV */
+nav{background:var(--g9);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:56px;border-bottom:2px solid var(--gold);position:sticky;top:0;z-index:100}
+.nav-logo{width:34px;height:34px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:var(--g9);flex-shrink:0}
+.nav-name{color:#fff;font-size:15px;font-weight:600}.nav-sub{color:var(--gold);font-size:10px;letter-spacing:1.5px;margin-top:1px}
+.conn-pill{display:flex;align-items:center;gap:7px;padding:5px 14px;border-radius:20px;font-size:12px;font-weight:500;border:1px solid;transition:all .2s}
+.conn-pill.disconnected{background:rgba(255,255,255,0.07);border-color:rgba(255,255,255,0.2);color:rgba(255,255,255,0.6)}
+.conn-pill.connected{background:rgba(29,158,85,0.2);border-color:var(--g5);color:#7fe8a8}
+.conn-pill.error{background:rgba(192,57,43,0.2);border-color:var(--red);color:#f5a0a0}
+.pulse{width:8px;height:8px;border-radius:50%;background:currentColor;flex-shrink:0}
+.pulse.blink{animation:blink 1.4s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* PAGE */
+.page{max-width:1100px;margin:0 auto;padding:28px 24px}
+
+/* SETUP CARD */
+.setup-card{background:var(--card);border:1.5px solid var(--gold);border-radius:14px;padding:24px 28px;margin-bottom:24px;display:none}
+.setup-card.visible{display:block}
+.setup-card h2{font-size:16px;font-weight:700;color:var(--g9);margin-bottom:4px}
+.setup-card p{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:16px}
+.url-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.url-input{flex:1;min-width:280px;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:var(--mono);color:var(--text);background:var(--bg);transition:border-color .15s}
+.url-input:focus{outline:none;border-color:var(--g7);background:#fff}
+.btn-save{background:var(--g9);color:#fff;border:none;padding:10px 22px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s;white-space:nowrap}
+.btn-save:hover{background:var(--g7)}
+.btn-test{background:transparent;color:var(--g9);border:1.5px solid var(--g9);padding:10px 18px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;transition:background .15s;white-space:nowrap}
+.btn-test:hover{background:var(--g1)}
+.url-hint{font-size:11px;color:var(--muted);margin-top:8px}
+code{font-family:var(--mono);font-size:11px;background:var(--bg);padding:2px 6px;border-radius:4px;color:var(--text)}
+
+/* HERO */
+.hero{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px 32px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.hero h1{font-size:22px;font-weight:700;color:var(--g9);margin-bottom:4px}
+.hero p{font-size:13px;color:var(--muted);line-height:1.5;max-width:420px}
+.hero-btns{display:flex;align-items:center;gap:12px;flex-shrink:0}
+.btn-start{background:var(--g9);color:#fff;border:none;padding:13px 30px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .15s;letter-spacing:.3px;position:relative;overflow:hidden}
+.btn-start:hover{background:var(--g7)}
+.btn-start:active{transform:scale(0.98)}
+.btn-start.running{background:var(--red)}
+.btn-start.running:hover{background:#a93226}
+.btn-start:disabled{opacity:.5;cursor:not-allowed}
+.btn-once{background:transparent;color:var(--g9);border:1.5px solid var(--g9);padding:11px 20px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;transition:background .15s}
+.btn-once:hover{background:var(--g1)}
+.btn-once:disabled{opacity:.5;cursor:not-allowed}
+.prog-wrap{background:var(--border);border-radius:4px;height:5px;overflow:hidden;margin-top:10px;width:100%;max-width:340px}
+.prog-bar{height:100%;background:var(--g7);border-radius:4px;transition:width .4s ease}
+.prog-lbl{font-size:11px;color:var(--muted);margin-top:5px}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px}
+.sc .lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px}
+.sc .val{font-size:26px;font-weight:700;color:var(--g9);line-height:1}
+.sc .sub{font-size:11px;color:var(--muted);margin-top:4px}
+.sc.gold .val{color:var(--amber)}
+.sc.red  .val{color:var(--red)}
+.sc.blue .val{color:var(--blue)}
+
+/* PIPELINE */
+.pipeline-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:20px}
+.card-head{padding:13px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-head h3{font-size:13px;font-weight:600}
+.pipeline{display:flex;align-items:center;padding:20px 24px;gap:0;overflow-x:auto}
+.pnode{display:flex;flex-direction:column;align-items:center;min-width:82px;flex-shrink:0}
+.pdot{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;border:2px solid var(--border);background:var(--bg);transition:all .3s;position:relative;cursor:default}
+.pdot.active{background:var(--g9);border-color:var(--g9)}
+.pdot.active::after{content:'';position:absolute;inset:-5px;border-radius:50%;border:2px solid var(--g5);animation:ring 1.1s ease-out infinite}
+@keyframes ring{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.7)}}
+.pdot.done{background:var(--g1);border-color:var(--g5)}
+.pdot.err{background:var(--red-lt);border-color:var(--red)}
+.pdot .ico{font-size:17px;transition:opacity .2s}
+.pdot .chk{display:none;font-size:17px;color:var(--g7)}
+.pdot.done .ico{display:none}.pdot.done .chk{display:block}
+.pdot.active .ico{opacity:1;filter:brightness(10)}
+.plbl{font-size:10px;color:var(--muted);margin-top:6px;text-align:center;line-height:1.3;max-width:78px}
+.parrow{flex-shrink:0;width:24px;text-align:center;color:var(--border);font-size:18px;margin-bottom:24px}
+
+/* TWO COL */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.card-body{padding:20px}
+
+/* FORM */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fg{display:flex;flex-direction:column;gap:4px}.fg.fw{grid-column:span 2}
+.fg label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.fg input,.fg textarea,.fg select{padding:9px 12px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;color:var(--text);background:var(--bg);font-family:inherit;transition:border-color .15s}
+.fg input:focus,.fg textarea:focus{outline:none;border-color:var(--g7);background:#fff}
+.fg textarea{resize:vertical;min-height:60px}
+.form-actions{margin-top:14px;display:flex;gap:10px;align-items:center}
+.btn-add{background:var(--g9);color:#fff;border:none;padding:10px 22px;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s}
+.btn-add:hover{background:var(--g7)}
+
+/* LOG */
+.log-list{display:flex;flex-direction:column;max-height:290px;overflow-y:auto;padding:4px 0}
+.log-item{display:flex;align-items:flex-start;gap:9px;padding:9px 0;border-bottom:1px solid var(--border);font-size:12px}
+.log-item:last-child{border-bottom:none}
+.ldot{width:7px;height:7px;border-radius:50%;margin-top:4px;flex-shrink:0}
+.ldot.sent{background:var(--g5)}.ldot.error{background:var(--red)}.ldot.info{background:#aaa}.ldot.warn{background:var(--amber)}
+.ltime{color:var(--muted);font-family:var(--mono);font-size:11px;min-width:50px;flex-shrink:0;margin-top:1px}
+.ltext{color:var(--text);line-height:1.5}
+
+/* LEAD TABLE */
+.tbl-wrap{max-height:300px;overflow-y:auto}
+.ltbl{width:100%;border-collapse:collapse;font-size:12px}
+.ltbl th{text-align:left;padding:8px 12px;background:var(--bg);border-bottom:1px solid var(--border);font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;position:sticky;top:0}
+.ltbl td{padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text)}
+.ltbl tr:last-child td{border-bottom:none}
+.ltbl tr:hover td{background:var(--g1)}
+.sb{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500}
+.s-pending{background:var(--amb-lt);color:var(--amber)}.s-sent{background:var(--g1);color:var(--g7)}.s-failed{background:var(--red-lt);color:var(--red)}
+
+/* CONFIG */
+.cfg-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border)}
+.cfg-row:last-child{border-bottom:none}
+.cfg-lbl{font-size:13px;color:var(--text)}.cfg-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.cfg-val{font-size:12px;color:var(--g7);font-family:var(--mono);font-weight:600}
+.toggle{position:relative;width:36px;height:20px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.tog-sl{position:absolute;inset:0;background:var(--border);border-radius:20px;cursor:pointer;transition:background .2s}
+.tog-sl::before{content:'';position:absolute;width:14px;height:14px;border-radius:50%;background:#fff;left:3px;top:3px;transition:transform .2s}
+.toggle input:checked+.tog-sl{background:var(--g7)}
+.toggle input:checked+.tog-sl::before{transform:translateX(16px)}
+
+/* TOAST */
+#toast{position:fixed;bottom:28px;right:28px;background:var(--g9);color:#fff;padding:11px 20px;border-radius:8px;font-size:13px;font-weight:500;box-shadow:0 4px 16px rgba(0,0,0,.18);transform:translateY(80px);opacity:0;transition:all .3s;z-index:1000;max-width:320px}
+#toast.show{transform:translateY(0);opacity:1}
+#toast.err{background:var(--red)}
+#toast.warn{background:var(--amber)}
+
+@media(max-width:700px){.stats{grid-template-columns:1fr 1fr}.two-col{grid-template-columns:1fr}.hero{flex-direction:column;align-items:flex-start}.form-grid{grid-template-columns:1fr}.fg.fw{grid-column:span 1}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div style="display:flex;align-items:center;gap:12px">
+    <div class="nav-logo">AG</div>
+    <div><div class="nav-name">AI Green Solutions</div><div class="nav-sub">EMAIL CAMPAIGN CONTROL v2</div></div>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <div class="conn-pill disconnected" id="conn-pill">
+      <div class="pulse" id="pulse-dot"></div>
+      <span id="conn-text">Not connected</span>
+    </div>
+    <button onclick="showSetup()" style="background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.25);padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer">⚙ Configure</button>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- SETUP CARD -->
+  <div class="setup-card" id="setup-card">
+    <h2>Connect to your n8n Webhook</h2>
+    <p>Import the new workflow JSON (downloaded below), activate it in n8n, then paste the Production Webhook URL here. The URL format is: <code>https://your-n8n.com/webhook/food-export-trigger</code></p>
+    <div class="url-row">
+      <input class="url-input" id="wh-input" type="text" placeholder="https://your-n8n.com/webhook/food-export-trigger">
+      <button class="btn-test" onclick="testWebhook()">▶ Test</button>
+      <button class="btn-save" onclick="saveWebhook()">Save & Connect</button>
+    </div>
+    <div class="url-hint" id="wh-hint">The webhook path in the imported workflow is already set to <code>food-export-trigger</code>. Just replace the domain with your n8n URL.</div>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div style="flex:1">
+      <h1>Campaign Control Centre</h1>
+      <p>Click <strong>Start Campaign</strong> to instantly trigger your n8n workflow. Each run picks the next pending lead, generates a personalised AI email, and marks it sent in your sheet.</p>
+      <div class="prog-wrap"><div class="prog-bar" id="prog-bar" style="width:0%"></div></div>
+      <div class="prog-lbl" id="prog-lbl">Ready — 0 triggered this session</div>
+    </div>
+    <div class="hero-btns">
+      <button class="btn-once" id="btn-once" onclick="runOnce()" disabled>▶ Run Once</button>
+      <button class="btn-start" id="btn-start" onclick="toggleCampaign()" disabled>
+        <span id="btn-icon">▶</span> <span id="btn-lbl">Start Campaign</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="sc"><div class="lbl">Triggered Today</div><div class="val" id="s-sent">0</div><div class="sub">Daily limit: 480</div></div>
+    <div class="sc gold"><div class="lbl">Successful Calls</div><div class="val" id="s-ok">0</div><div class="sub">n8n responded OK</div></div>
+    <div class="sc blue"><div class="lbl">Queue Size</div><div class="val" id="s-queue">—</div><div class="sub">Pending leads</div></div>
+    <div class="sc red"><div class="lbl">Failed Calls</div><div class="val" id="s-fail">0</div><div class="sub">Check log below</div></div>
+  </div>
+
+  <!-- PIPELINE -->
+  <div class="pipeline-card">
+    <div class="card-head">
+      <h3>Live Pipeline</h3>
+      <span style="font-size:11px;color:var(--muted)" id="pipe-status">Waiting for trigger…</span>
+    </div>
+    <div class="pipeline" id="pipeline">
+      <div class="pnode"><div class="pdot" id="p0"><span class="ico">⚡</span><span class="chk">✓</span></div><div class="plbl">Webhook<br>Trigger</div></div>
+      <div class="parrow">›</div>
+      <div class="pnode"><div class="pdot" id="p1"><span class="ico">🔀</span><span class="chk">✓</span></div><div class="plbl">Merge<br>Triggers</div></div>
+      <div class="parrow">›</div>
+      <div class="pnode"><div class="pdot" id="p2"><span class="ico">📋</span><span class="chk">✓</span></div><div class="plbl">Read<br>Sheet</div></div>
+      <div class="parrow">›</div>
+      <div class="pnode"><div class="pdot" id="p3"><span class="ico">🤖</span><span class="chk">✓</span></div><div class="plbl">AI Agent<br>Gemini</div></div>
+      <div class="parrow">›</div>
+      <div class="pnode"><div class="pdot" id="p4"><span class="ico">📄</span><span class="chk">✓</span></div><div class="plbl">Parse<br>Output</div></div>
+      <div class="parrow">›</div>
+      <div class="pnode"><div class="pdot" id="p5"><span class="ico">📎</span><span class="chk">✓</span></div><div class="plbl">Download<br>Brochure</div></div>
+      <div class="parrow">›</div>
+      <div class="pnode"><div class="pdot" id="p6"><span class="ico">✉️</span><span class="chk">✓</span></div><div class="plbl">Send<br>Gmail</div></div>
+      <div class="parrow">›</div>
+      <div class="pnode"><div class="pdot" id="p7"><span class="ico">📊</span><span class="chk">✓</span></div><div class="plbl">Update<br>Sheet</div></div>
+    </div>
+  </div>
+
+  <!-- FORM + LOG -->
+  <div class="two-col">
+    <div class="card">
+      <div class="card-head"><h3>Add Lead to Queue</h3><span style="font-size:11px;color:var(--muted)">Adds row to Google Sheet</span></div>
+      <div class="card-body">
+        <div class="form-grid">
+          <div class="fg"><label>Contact Name</label><input id="f-name" type="text" placeholder="John Amara"></div>
+          <div class="fg"><label>Company</label><input id="f-company" type="text" placeholder="Lagos Foods Ltd"></div>
+          <div class="fg"><label>Email Address</label><input id="f-email" type="email" placeholder="procurement@company.com"></div>
+          <div class="fg"><label>Country</label><input id="f-country" type="text" placeholder="Nigeria"></div>
+          <div class="fg"><label>Closest Port</label><input id="f-port" type="text" placeholder="Apapa, Lagos"></div>
+          <div class="fg"><label>Website</label><input id="f-web" type="text" placeholder="www.company.com"></div>
+          <div class="fg fw"><label>Products Needed</label><textarea id="f-prod" placeholder="sesame, yellow corn, ginger, cashew…"></textarea></div>
+        </div>
+        <div class="form-actions">
+          <button class="btn-add" onclick="addLead()">Add to Queue</button>
+          <span style="font-size:12px;color:var(--muted)">Leave status blank — automation picks it up</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h3>Activity Log</h3><button onclick="clearLog()" style="font-size:11px;color:var(--muted);background:none;border:none;cursor:pointer">Clear</button></div>
+      <div class="card-body" style="padding:0 20px">
+        <div class="log-list" id="log-list">
+          <div class="log-item"><div class="ldot info"></div><div class="ltime">--:--</div><div class="ltext">Dashboard loaded. Configure your webhook URL to connect.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLE + CONFIG -->
+  <div class="two-col">
+    <div class="card">
+      <div class="card-head"><h3>Lead Queue</h3><span style="font-size:11px;color:var(--muted)">This session</span></div>
+      <div class="tbl-wrap">
+        <table class="ltbl"><thead><tr><th>Company</th><th>Products</th><th>Port</th><th>Status</th></tr></thead>
+        <tbody id="lead-tbody"><tr><td colspan="4" style="text-align:center;color:var(--muted);padding:24px;font-size:13px">No leads added this session</td></tr></tbody></table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h3>Automation Config</h3></div>
+      <div class="card-body" style="padding:4px 20px 12px">
+        <div class="cfg-row"><div><div class="cfg-lbl">Schedule interval</div><div class="cfg-sub">Auto-run when workflow active</div></div><div class="cfg-val">Every 3 min</div></div>
+        <div class="cfg-row"><div><div class="cfg-lbl">AI model</div><div class="cfg-sub">Gemini 2.5 Flash</div></div><div class="cfg-val">gemini-2.5-flash</div></div>
+        <div class="cfg-row"><div><div class="cfg-lbl">Webhook path</div><div class="cfg-sub">POST endpoint in new workflow</div></div><div class="cfg-val">/webhook/food-export-trigger</div></div>
+        <div class="cfg-row"><div><div class="cfg-lbl">Response mode</div><div class="cfg-sub">Workflow replies immediately</div></div><div class="cfg-val">responseNode</div></div>
+        <div class="cfg-row"><div><div class="cfg-lbl">Auto-loop (dashboard)</div><div class="cfg-sub">Re-trigger every N seconds</div></div>
+          <label class="toggle"><input type="checkbox" id="auto-loop" checked><span class="tog-sl"></span></label>
+        </div>
+        <div class="cfg-row"><div><div class="cfg-lbl">Loop interval</div><div class="cfg-sub">Match your n8n schedule</div></div>
+          <select id="loop-int" style="padding:5px 10px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;background:var(--bg)">
+            <option value="180">3 min</option><option value="120">2 min</option><option value="60">1 min</option><option value="30">30 sec</option>
+          </select>
+        </div>
+        <div style="margin-top:14px;display:flex;gap:12px;flex-wrap:wrap">
+          <a href="https://docs.google.com/spreadsheets/d/1NNljn4P27vKRFcrb81iGKzXuPg5q9yTIPGkxGFBu_3A/edit" target="_blank" style="font-size:12px;color:var(--g7);text-decoration:none;font-weight:500">↗ Open Google Sheet</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<div id="toast"></div>
+
+<script>
+// ── STATE ──────────────────────────────────────────────────
+let webhookUrl = localStorage.getItem('ag_wh_v2') || '';
+let running = false, loopTimer = null;
+let sent = 0, ok = 0, fail = 0;
+let leads = [];
+let pipeTimers = [];
+
+// ── INIT ──────────────────────────────────────────────────
+(function init() {
+  if (webhookUrl) {
+    document.getElementById('wh-input').value = webhookUrl;
+    setConnected('idle');
+    enableButtons(true);
+    log('Webhook URL loaded from storage: ' + webhookUrl, 'info');
+  } else {
+    showSetup();
+  }
+})();
+
+// ── SETUP / WEBHOOK CONFIG ─────────────────────────────────
+function showSetup() {
+  const c = document.getElementById('setup-card');
+  c.classList.toggle('visible');
+}
+
+function saveWebhook() {
+  const v = document.getElementById('wh-input').value.trim();
+  if (!v.startsWith('http')) { toast('Enter a valid URL starting with https://', 'err'); return; }
+  webhookUrl = v;
+  localStorage.setItem('ag_wh_v2', v);
+  setConnected('idle');
+  enableButtons(true);
+  document.getElementById('setup-card').classList.remove('visible');
+  log('Webhook URL saved: ' + v, 'info');
+  toast('Webhook saved ✓');
+}
+
+async function testWebhook() {
+  const v = document.getElementById('wh-input').value.trim();
+  if (!v) { toast('Enter a URL first', 'warn'); return; }
+  document.getElementById('wh-hint').textContent = 'Testing connection…';
+  try {
+    const r = await callWebhook(v);
+    if (r.ok) {
+      document.getElementById('wh-hint').textContent = '✓ Connection successful! Workflow responded with HTTP ' + r.status;
+      toast('Test successful — n8n is reachable ✓');
+    } else {
+      document.getElementById('wh-hint').textContent = '✗ n8n responded with HTTP ' + r.status + '. Check the workflow is Active.';
+      toast('HTTP ' + r.status + ' — see hint below', 'warn');
+    }
+  } catch (e) {
+    document.getElementById('wh-hint').textContent = '✗ Could not reach n8n: ' + e.message + '. Check CORS and that n8n is running.';
+    toast('Connection failed — ' + e.message, 'err');
+  }
+}
+
+// ── CONNECTION STATE ───────────────────────────────────────
+function setConnected(state) {
+  const pill = document.getElementById('conn-pill');
+  const dot  = document.getElementById('pulse-dot');
+  const txt  = document.getElementById('conn-text');
+  pill.className = 'conn-pill';
+  dot.className  = 'pulse';
+  if (state === 'idle')    { pill.classList.add('connected'); txt.textContent = 'Connected'; }
+  if (state === 'running') { pill.classList.add('connected'); dot.classList.add('blink'); txt.textContent = 'Running…'; }
+  if (state === 'error')   { pill.classList.add('error');     txt.textContent = 'Error'; }
+  if (state === 'off')     { pill.classList.add('disconnected'); txt.textContent = 'Not connected'; }
+}
+
+function enableButtons(yes) {
+  document.getElementById('btn-start').disabled = !yes;
+  document.getElementById('btn-once').disabled  = !yes;
+}
+
+// ── CAMPAIGN ──────────────────────────────────────────────
+function toggleCampaign() {
+  running ? stopCampaign() : startCampaign();
+}
+
+function startCampaign() {
+  running = true;
+  updateMainBtn();
+  setConnected('running');
+  log('Campaign started', 'info');
+  runOnce();
+  scheduleLoop();
+}
+
+function stopCampaign() {
+  running = false;
+  clearInterval(loopTimer);
+  loopTimer = null;
+  updateMainBtn();
+  setConnected('idle');
+  resetPipeline();
+  log('Campaign stopped by user', 'info');
+  toast('Campaign stopped');
+}
+
+function scheduleLoop() {
+  if (!document.getElementById('auto-loop').checked) return;
+  const ms = parseInt(document.getElementById('loop-int').value) * 1000;
+  loopTimer = setInterval(() => { if (running) runOnce(); }, ms);
+}
+
+async function runOnce() {
+  animatePipeline();
+  try {
+    const r = await callWebhook(webhookUrl);
+    sent++;
+    document.getElementById('s-sent').textContent = sent;
+    if (r.ok) {
+      ok++;
+      document.getElementById('s-ok').textContent = ok;
+      const body = await r.json().catch(() => ({}));
+      log('Webhook triggered → n8n responded OK (' + r.status + ')' + (body.message ? ' — ' + body.message : ''), 'sent');
+      updateProgress();
+    } else {
+      fail++;
+      document.getElementById('s-fail').textContent = fail;
+      pipelineError();
+      setConnected('error');
+      log('n8n returned HTTP ' + r.status + ' — check workflow is Active and credential warnings are resolved', 'error');
+      toast('n8n returned ' + r.status, 'err');
+      if (running) stopCampaign();
+    }
+  } catch(e) {
+    fail++;
+    document.getElementById('s-fail').textContent = fail;
+    pipelineError();
+    setConnected('error');
+    log('Request failed: ' + e.message + ' — CORS issue or n8n is unreachable', 'error');
+    toast('Request failed — ' + e.message, 'err');
+    if (running) stopCampaign();
+  }
+}
+
+async function callWebhook(url) {
+  return fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ source: 'dashboard', triggeredAt: new Date().toISOString() })
+  });
+}
+
+function updateProgress() {
+  const pct = Math.min((sent / 480) * 100, 100);
+  document.getElementById('prog-bar').style.width = pct.toFixed(1) + '%';
+  document.getElementById('prog-lbl').textContent =
+    sent + ' triggered this session · ' + Math.max(0, 480 - sent) + ' remaining in daily quota';
+}
+
+function updateMainBtn() {
+  const btn  = document.getElementById('btn-start');
+  const icon = document.getElementById('btn-icon');
+  const lbl  = document.getElementById('btn-lbl');
+  if (running) {
+    btn.classList.add('running'); icon.textContent = '■'; lbl.textContent = 'Stop Campaign';
+  } else {
+    btn.classList.remove('running'); icon.textContent = '▶'; lbl.textContent = 'Start Campaign';
+  }
+}
+
+// ── PIPELINE ANIMATION ────────────────────────────────────
+const NODES    = ['p0','p1','p2','p3','p4','p5','p6','p7'];
+const LABELS   = ['Webhook','Merge','Read Sheet','AI Agent','Parse','Brochure','Send Gmail','Update Sheet'];
+const DELAYS   = [100, 300, 700, 3500, 500, 900, 800, 600];
+
+function resetPipeline() {
+  pipeTimers.forEach(clearTimeout); pipeTimers = [];
+  NODES.forEach(id => document.getElementById(id).className = 'pdot');
+  document.getElementById('pipe-status').textContent = 'Waiting for trigger…';
+}
+
+function animatePipeline() {
+  resetPipeline();
+  let t = 0;
+  NODES.forEach((id, i) => {
+    t += DELAYS[i];
+    pipeTimers.push(setTimeout(() => {
+      NODES.forEach(x => {
+        const el = document.getElementById(x);
+        if (el.classList.contains('active')) el.className = 'pdot done';
+      });
+      document.getElementById(id).className = 'pdot active';
+      document.getElementById('pipe-status').textContent = 'Running: ' + LABELS[i] + '…';
+    }, t));
+  });
+  pipeTimers.push(setTimeout(() => {
+    NODES.forEach(id => document.getElementById(id).className = 'pdot done');
+    document.getElementById('pipe-status').textContent = '✓ Complete — email sent & sheet updated';
+  }, t + 500));
+}
+
+function pipelineError() {
+  NODES.forEach(id => {
+    const el = document.getElementById(id);
+    if (el.classList.contains('active')) el.className = 'pdot err';
+  });
+  document.getElementById('pipe-status').textContent = '✗ Error — check activity log';
+}
+
+// ── ADD LEAD ──────────────────────────────────────────────
+function addLead() {
+  const company = document.getElementById('f-company').value.trim();
+  const email   = document.getElementById('f-email').value.trim();
+  if (!company || !email) { toast('Company and email are required', 'err'); return; }
+  const lead = {
+    name:    document.getElementById('f-name').value.trim(),
+    company, email,
+    country: document.getElementById('f-country').value.trim(),
+    port:    document.getElementById('f-port').value.trim(),
+    website: document.getElementById('f-web').value.trim(),
+    products:document.getElementById('f-prod').value.trim(),
+    status: 'pending'
+  };
+  leads.push(lead);
+  renderLeads();
+  document.getElementById('s-queue').textContent = leads.filter(l => l.status === 'pending').length;
+  log('Lead queued: ' + company + ' <' + email + '>', 'info');
+  toast('Lead added ✓');
+  ['f-name','f-company','f-email','f-country','f-port','f-web','f-prod'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+}
+
+function renderLeads() {
+  const tb = document.getElementById('lead-tbody');
+  if (!leads.length) { tb.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:24px;font-size:13px">No leads added</td></tr>'; return; }
+  tb.innerHTML = leads.map(l => `<tr>
+    <td><strong>${l.company}</strong><br><span style="color:var(--muted);font-size:11px">${l.email}</span></td>
+    <td style="color:var(--muted);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.products||'—'}</td>
+    <td>${l.port||'—'}</td>
+    <td><span class="sb s-${l.status}">${l.status}</span></td>
+  </tr>`).join('');
+}
+
+// ── LOG ───────────────────────────────────────────────────
+function log(msg, type = 'info') {
+  const list = document.getElementById('log-list');
+  const now  = new Date();
+  const t    = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0') + ':' + now.getSeconds().toString().padStart(2,'0');
+  const item = document.createElement('div');
+  item.className = 'log-item';
+  item.innerHTML = `<div class="ldot ${type}"></div><div class="ltime">${t}</div><div class="ltext">${msg}</div>`;
+  list.insertBefore(item, list.firstChild);
+  if (list.children.length > 80) list.removeChild(list.lastChild);
+}
+
+function clearLog() {
+  document.getElementById('log-list').innerHTML = '<div class="log-item"><div class="ldot info"></div><div class="ltime">--:--</div><div class="ltext">Log cleared</div></div>';
+}
+
+// ── TOAST ─────────────────────────────────────────────────
+function toast(msg, type = 'ok') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'show' + (type === 'err' ? ' err' : type === 'warn' ? ' warn' : '');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => { el.className = ''; }, 3200);
+}
+</script>
+</body>
+</html>
