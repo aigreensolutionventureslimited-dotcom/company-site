@@ -541,6 +541,28 @@ footer{background:#0E2218;color:#fff;padding:64px 0 0}
   .test-quote-panel{padding:32px 24px}
   .form-box{padding:24px}
 }
+/* ── LANGUAGE SWITCHER ── */
+#google_translate_element{display:none!important}
+.goog-te-banner-frame,.skiptranslate>iframe{display:none!important;visibility:hidden!important;height:0!important}
+body{top:0!important;position:static!important}
+.goog-tooltip,.goog-tooltip:hover{display:none!important}
+.goog-text-highlight{background:none!important;box-shadow:none!important}
+.lang-switch{position:relative}
+.lang-btn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:#fff;padding:8px 12px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;transition:background .2s,border-color .2s}
+.lang-btn:hover{background:rgba(255,255,255,.16);border-color:var(--gold)}
+.lang-btn svg{flex-shrink:0}
+.lang-current{text-transform:uppercase;letter-spacing:.03em}
+.lang-dropdown{position:absolute;top:calc(100% + 10px);right:0;background:#fff;border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.22);min-width:190px;max-height:320px;overflow-y:auto;opacity:0;visibility:hidden;transform:translateY(-8px);transition:opacity .18s,transform .18s,visibility .18s;z-index:200}
+.lang-dropdown.open{opacity:1;visibility:visible;transform:translateY(0)}
+.lang-option{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px 16px;font-size:13.5px;color:#222;background:none;border:none;cursor:pointer;transition:background .15s}
+.lang-option:hover{background:#f3f3f0}
+.lang-option.active{color:var(--green);font-weight:700;background:#f3f3f0}
+.lang-option .flag{font-size:16px}
+#mobile-menu .lang-switch-mobile{margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,.07)}
+#mobile-menu .lang-label-mobile{color:rgba(255,255,255,.5);font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+#mobile-menu .lang-grid-mobile{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#mobile-menu .lang-grid-mobile button{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.85);font-size:13px;cursor:pointer}
+#mobile-menu .lang-grid-mobile button.active{border-color:var(--gold);color:var(--gold)}
 </style>
 </head>
 <body>
@@ -573,12 +595,35 @@ footer{background:#0E2218;color:#fff;padding:64px 0 0}
       <a href="#shipping">Shipping</a>
       <a href="#why">Why Us</a>
     </div>
+    <div class="lang-switch" id="langSwitch">
+      <button class="lang-btn" id="langBtn" aria-haspopup="true" aria-expanded="false">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>
+        <span class="lang-current" id="langCurrent">EN</span>
+      </button>
+      <div class="lang-dropdown" id="langDropdown">
+        <button class="lang-option active" data-lang="en"><span class="flag">🇬🇧</span> English</button>
+        <button class="lang-option" data-lang="fr"><span class="flag">🇫🇷</span> Français</button>
+        <button class="lang-option" data-lang="es"><span class="flag">🇪🇸</span> Español</button>
+        <button class="lang-option" data-lang="pt"><span class="flag">🇵🇹</span> Português</button>
+        <button class="lang-option" data-lang="ar"><span class="flag">🇸🇦</span> العربية</button>
+        <button class="lang-option" data-lang="zh-CN"><span class="flag">🇨🇳</span> 中文</button>
+        <button class="lang-option" data-lang="de"><span class="flag">🇩🇪</span> Deutsch</button>
+        <button class="lang-option" data-lang="nl"><span class="flag">🇳🇱</span> Nederlands</button>
+        <button class="lang-option" data-lang="hi"><span class="flag">🇮🇳</span> हिन्दी</button>
+        <button class="lang-option" data-lang="sw"><span class="flag">🇰🇪</span> Kiswahili</button>
+        <button class="lang-option" data-lang="ha"><span class="flag">🇳🇬</span> Hausa</button>
+        <button class="lang-option" data-lang="yo"><span class="flag">🇳🇬</span> Yorùbá</button>
+      </div>
+    </div>
     <a href="#contact" class="btn-primary nav-cta" style="font-size:13px;padding:10px 20px">Request Quote</a>
     <button class="nav-hamburger" id="hamburger" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
   </div>
 </nav>
+
+<!-- Google Translate (hidden, driven by custom UI above) -->
+<div id="google_translate_element"></div>
 
 <!-- MOBILE MENU -->
 <div id="mobile-menu">
@@ -588,6 +633,23 @@ footer{background:#0E2218;color:#fff;padding:64px 0 0}
   <a href="#shipping" onclick="closeMobile()">Shipping</a>
   <a href="#why" onclick="closeMobile()">Why Us</a>
   <a href="#contact" class="mobile-cta" onclick="closeMobile()">Request a Quote</a>
+  <div class="lang-switch-mobile">
+    <div class="lang-label-mobile">Language</div>
+    <div class="lang-grid-mobile" id="langGridMobile">
+      <button data-lang="en" class="active">🇬🇧 English</button>
+      <button data-lang="fr">🇫🇷 Français</button>
+      <button data-lang="es">🇪🇸 Español</button>
+      <button data-lang="pt">🇵🇹 Português</button>
+      <button data-lang="ar">🇸🇦 العربية</button>
+      <button data-lang="zh-CN">🇨🇳 中文</button>
+      <button data-lang="de">🇩🇪 Deutsch</button>
+      <button data-lang="nl">🇳🇱 Nederlands</button>
+      <button data-lang="hi">🇮🇳 हिन्दी</button>
+      <button data-lang="sw">🇰🇪 Kiswahili</button>
+      <button data-lang="ha">🇳🇬 Hausa</button>
+      <button data-lang="yo">🇳🇬 Yorùbá</button>
+    </div>
+  </div>
 </div>
 
 <main>
@@ -1357,6 +1419,88 @@ document.querySelectorAll('.pillar,.why-card,.product-card,.ship-opt,.supply-ste
   el.style.opacity='0';el.style.transform='translateY(20px)';el.style.transition='opacity .5s ease, transform .5s ease';
   io.observe(el);
 });
+
+// ── LANGUAGE SWITCHER (Google Translate) ──
+const LANG_NAMES={en:'EN',fr:'FR',es:'ES',pt:'PT',ar:'AR',ir:'ZH','zh-CN':'ZH',de:'DE',nl:'NL',hi:'HI',sw:'SW',ha:'HA',yo:'YO'};
+
+function googleTranslateElementInit(){
+  new google.translate.TranslateElement({
+    pageLanguage:'en',
+    includedLanguages:'en,fr,es,pt,ar,zh-CN,de,nl,hi,sw,ha,yo',
+    autoDisplay:false
+  },'google_translate_element');
+  // apply any language stored/in the URL once the widget is ready
+  const saved=getCookie('googtrans');
+  if(saved){
+    const code=saved.split('/').pop();
+    if(code&&code!=='en')setTimeout(()=>doGTranslate(code,false),300);
+  }
+}
+
+function getCookie(name){
+  const m=document.cookie.match('(?:^|; )'+name+'=([^;]*)');
+  return m?decodeURIComponent(m[1]):null;
+}
+function setCookie(name,value){
+  const host=window.location.hostname;
+  document.cookie=name+'='+value+';path=/';
+  document.cookie=name+'='+value+';path=/;domain=.'+host;
+}
+
+function doGTranslate(lang,reload){
+  if(lang==='en'){
+    setCookie('googtrans','/en/en');
+    if(reload)location.reload();
+    return;
+  }
+  setCookie('googtrans','/en/'+lang);
+  const combo=document.querySelector('select.goog-te-combo');
+  if(combo){
+    combo.value=lang;
+    combo.dispatchEvent(new Event('change'));
+  }else if(reload!==false){
+    // widget not ready yet — reload so the cookie is picked up on init
+    location.reload();
+  }
+}
+
+function setActiveLangUI(lang){
+  const short=LANG_NAMES[lang]||lang.toUpperCase();
+  const cur=document.getElementById('langCurrent');
+  if(cur)cur.textContent=short;
+  document.querySelectorAll('.lang-option').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));
+  document.querySelectorAll('#langGridMobile button').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));
+}
+
+document.querySelectorAll('.lang-option, #langGridMobile button').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const lang=btn.dataset.lang;
+    setActiveLangUI(lang);
+    doGTranslate(lang,true);
+    document.getElementById('langDropdown').classList.remove('open');
+    closeMobile();
+  });
+});
+
+const langBtn=document.getElementById('langBtn');
+const langDropdown=document.getElementById('langDropdown');
+langBtn.addEventListener('click',(e)=>{
+  e.stopPropagation();
+  langDropdown.classList.toggle('open');
+});
+document.addEventListener('click',(e)=>{
+  if(!document.getElementById('langSwitch').contains(e.target))langDropdown.classList.remove('open');
+});
+
+// reflect saved language in the button on load
+(function(){
+  const saved=getCookie('googtrans');
+  if(saved){
+    const code=saved.split('/').pop();
+    if(code)setActiveLangUI(code);
+  }
+})();
 </script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async></script>
 </body>
 </html>
