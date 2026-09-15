@@ -1,48 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://www.aigreensolutions.org/</loc>
+    <lastmod>2026-09-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>https://www.aigreensolutions.org/#about</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.aigreensolutions.org/#products</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://www.aigreensolutions.org/#supply</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.aigreensolutions.org/#shipping</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.aigreensolutions.org/#why</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.aigreensolutions.org/#testimonials</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://www.aigreensolutions.org/#faq</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.aigreensolutions.org/#contact</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/dkwaxxkgb/image/upload/v1783025274/WhatsApp_Image_2026-05-27_at_17.03.30_gq1a1d.jpg</image:loc>
+      <image:title>A.I Green Solutions Ventures Limited logo</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://i.postimg.cc/MTrMdLSJ/DRIED-GINGER.jpg</image:loc>
+      <image:title>Premium dried ginger export Nigeria</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://i.postimg.cc/W1vRf6TP/SESAME-SEED.jpg</image:loc>
+      <image:title>Premium sesame seeds export Nigeria</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://i.postimg.cc/d1DDk9TC/CASHEW-NUT.jpg</image:loc>
+      <image:title>Premium cashew nuts W320 export Nigeria</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://i.postimg.cc/XYM1YVPN/COCOA-BEANS.jpg</image:loc>
+      <image:title>Grade 1 cocoa beans export Nigeria</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://i.postimg.cc/zBf0c3yk/image-(5).jpg</image:loc>
+      <image:title>Dried hibiscus calyces export Nigeria zobo</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://i.postimg.cc/fLk108fh/image-(6).jpg</image:loc>
+      <image:title>Grade A shea butter unrefined Nigeria export</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://i.postimg.cc/26FTyvPY/Gemini-Generated-Image-5v3ale5v3ale5v3a.png</image:loc>
+      <image:title>Non-GMO soybeans export Nigeria</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1567892737950-30c4db37cd89?w=600&amp;h=450&amp;fit=crop&amp;auto=format</image:loc>
+      <image:title>Groundnuts peanuts export Nigeria EU standard</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/dkwaxxkgb/image/upload/v1789505053/ChatGPT_Image_Sep_15_2026_10_41_43_PM_edrhbs.png</image:loc>
+      <image:title>Nigerian hardwood lump charcoal export</image:title>
+    </image:image>
   </url>
 </urlset>
