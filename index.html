@@ -1446,11 +1446,24 @@ function setCookie(name,value){
   document.cookie=name+'='+value+';path=/';
   document.cookie=name+'='+value+';path=/;domain=.'+host;
 }
+function deleteCookie(name){
+  const host=window.location.hostname;
+  const parts=host.split('.');
+  const bases=[host,'.'+host];
+  // also clear on the parent domain (e.g. example.com when on www.example.com)
+  if(parts.length>2)bases.push('.'+parts.slice(-2).join('.'));
+  bases.forEach(d=>{
+    document.cookie=name+'=;path=/;domain='+d+';expires=Thu, 01 Jan 1970 00:00:00 GMT';
+  });
+  document.cookie=name+'=;path=/;expires=Thu, 01 Jan 1970 00:00:00 GMT';
+}
 
 function doGTranslate(lang,reload){
   if(lang==='en'){
-    setCookie('googtrans','/en/en');
-    if(reload)location.reload();
+    // Google has no "translate to English" option — the only way back
+    // to the original text is to clear its cookie and reload the page.
+    deleteCookie('googtrans');
+    if(reload!==false)location.reload();
     return;
   }
   setCookie('googtrans','/en/'+lang);
